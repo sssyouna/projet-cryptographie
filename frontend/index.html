@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAuth2 System Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>OAuth2 System Dashboard</h1>
+            <p>Complete OAuth2/OIDC Implementation Suite</p>
+        </header>
+
+        <div class="endpoint-card" style="text-align: center;">
+            <h2>System Components</h2>
+            <p>Navigate to each component interface:</p>
+            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin: 20px 0;">
+                <a href="omar_auth_server.html" class="api-btn" style="text-decoration: none; padding: 15px 25px;">Authorization Server (Omar)</a>
+                <a href="resource_server.html" class="api-btn" style="text-decoration: none; padding: 15px 25px;">Resource Server (Your API)</a>
+                <a href="badr_client_app.html" class="api-btn" style="text-decoration: none; padding: 15px 25px;">Client Application (Badr)</a>
+            </div>
+        </div>
+
+        <div class="endpoint-card">
+            <h2>Seamless OAuth2 Flow Demonstration</h2>
+            <p>To experience the complete seamless flow:</p>
+            <ol>
+                <li>Click on "Client Application (Badr)" above</li>
+                <li>Click the "Login via third party" button</li>
+                <li>You will be automatically redirected to Omar's login page</li>
+                <li>Use sample credentials: username <code>alice</code>, password <code>password123</code></li>
+                <li>After authentication, you'll be automatically redirected back to Badr's app</li>
+                <li>Your session will be established with valid tokens</li>
+            </ol>
+            <p>All transitions happen automatically without manual intervention.</p>
+        </div>
+
+        <div class="endpoint-card">
+            <h2>System Overview</h2>
+            <p>This OAuth2 system consists of three main components:</p>
+            <ol>
+                <li><strong>Authorization Server (Omar)</strong> - Issues and manages JWT tokens</li>
+                <li><strong>Resource Server (Your Implementation)</strong> - Validates tokens and serves protected resources</li>
+                <li><strong>Client Application (Badr)</strong> - Consumes the API using valid tokens</li>
+            </ol>
+        </div>
+
+        <footer>
+            <p>OAuth2 System - Complete Implementation</p>
+        </footer>
+    </div>
+
+    <script>
+        // No JavaScript needed for this main page
+    </script>
+</body>
+</html>
