@@ -167,6 +167,7 @@ OAUTH_AUDIENCE=api://resource-server
 
 ### Mode développement
 
+#### Lancer un seul composant
 ```bash
 # Avec Flask directement
 python app.py
@@ -175,6 +176,22 @@ python app.py
 export FLASK_APP=app.py
 flask run --port 5000
 ```
+
+#### Lancer tous les composants du système OAuth2
+Pour démarrer le système complet avec tous les composants (Authorization Server, Resource Server, et Frontend), utilisez le script de démarrage :
+
+```bash
+# Sur Windows
+python start_all.py
+
+# Sur Linux/Mac
+python3 start_all.py
+```
+
+Ce script démarre automatiquement :
+- 🔐 **Authorization Server (Omar)** sur `http://localhost:3000`
+- 🛡️ **Resource Server (Votre API)** sur `http://localhost:5000`
+- 📱 **Frontend Dashboard** sur `http://localhost:8080`
 
 ### Mode production (avec gunicorn)
 

@@ -26,3 +26,9 @@ python-dotenv==1.0.0
 
 # Logging
 python-json-logger==2.0.7
+
+# Production Server (for Windows compatibility)
+waitress==2.1.2
+
+# Process Management (for start_all.py script)
+psutil==5.9.7

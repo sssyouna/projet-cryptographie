@@ -3,188 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authorization Server (Omar)</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Login - Omar Auth Server</title>
     <style>
-        body { background-color: #e8f4f8; }
-        header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
-        .card { border-left: 5px solid #1e3c72; }
-        .login-form { max-width: 400px; margin: 0 auto; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
-        .login-btn { width: 100%; padding: 12px; background: #1e3c72; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
-        .login-btn:hover { background: #2a5298; }
+        body { 
+            font-family: 'Comic Sans MS', cursive, sans-serif; 
+            max-width: 450px; 
+            margin: 30px auto; 
+            padding: 25px; 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .login-form { 
+            border: 3px dashed #1e3c72; 
+            padding: 25px; 
+            border-radius: 15px; 
+            background: white;
+            text-align: center;
+        }
+        h2 { 
+            color: #1e3c72; 
+            margin-top: 0;
+            font-size: 28px;
+        }
+        .client-info {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #1e3c72;
+        }
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 12px 0; 
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            border-color: #1e3c72;
+            outline: none;
+            box-shadow: 0 0 5px rgba(30, 60, 114, 0.3);
+        }
+        button { 
+            background: #1e3c72; 
+            color: white; 
+            padding: 14px 25px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        button:hover { 
+            background: #2a5298; 
+            transform: scale(1.05);
+        }
+        .demo-creds {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px dashed #ffc107;
+            font-size: 14px;
+        }
+        .fun-icon {
+            font-size: 40px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Authorization Server (Omar)</h1>
-            <p>Identity Provider & Token Issuer</p>
-        </header>
-
-        <div id="loginSection">
-            <div class="endpoint-card card login-form">
-                <h2 style="text-align: center;">Sign in to your account</h2>
-                <p style="text-align: center; color: #666;">Enter your credentials to continue</p>
-                
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" placeholder="Enter your username" value="alice">
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password" value="password123">
-                </div>
-                
-                <button class="login-btn" onclick="authenticateUser()">Sign In</button>
-                
-                <div class="result" id="auth-result" style="margin-top: 15px;"></div>
-            </div>
-            
-            <div class="endpoint-card card" style="margin-top: 20px;">
-                <h3>Demo Credentials</h3>
-                <p>For demonstration purposes, use:</p>
-                <ul>
-                    <li><strong>Username:</strong> alice</li>
-                    <li><strong>Password:</strong> password123</li>
-                </ul>
-            </div>
+    <div class="login-form">
+        <div class="fun-icon">🔐</div>
+        <h2>Hey there! 👋</h2>
+        <p>Looks like you want to log in to <strong>badr_app</strong></p>
+        
+        <div class="client-info">
+            <p>🔧 They want to access:</p>
+            <p><strong>profile read:orders write:orders</strong></p>
         </div>
-
-        <div id="consentSection" style="display: none;">
-            <div class="endpoint-card card">
-                <h2>Authorize Application</h2>
-                <p>The application <strong>Badr Client App</strong> wants to access your account:</p>
-                
-                <div style="background: #f0f8ff; padding: 15px; border-radius: 5px; margin: 15px 0;">
-                    <h4>Requested Permissions:</h4>
-                    <ul>
-                        <li>View your profile information</li>
-                        <li>View your orders</li>
-                        <li>Create new orders</li>
-                    </ul>
-                </div>
-                
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button class="api-btn" onclick="grantConsent()" style="flex: 1; background: #28a745;">Allow</button>
-                    <button class="api-btn" onclick="denyConsent()" style="flex: 1; background: #dc3545;">Deny</button>
-                </div>
-                
-                <div class="result" id="consent-result" style="margin-top: 15px;"></div>
-            </div>
+        
+        <form method="POST" action="/authenticate">
+            <input type="hidden" name="auth_req_id" value="auth_req_example">
+            <label>👤 Username:</label>
+            <input type="text" name="username" placeholder="Type your username here..." required>
+            <label>🔑 Password:</label>
+            <input type="password" name="password" placeholder="Shhh... secret password..." required>
+            <button type="submit">🎉 Let me in!</button>
+        </form>
+        
+        <div class="demo-creds">
+            <p>💡 Hint: Try <strong>alice</strong> with <strong>password123</strong></p>
+            <p>(Don't worry, we won't tell anyone! 😇)</p>
         </div>
-
-        <footer>
-            <p>Authorization Server (Omar) - Identity Provider</p>
-        </footer>
     </div>
-
-    <script>
-        // Check for OAuth2 parameters on page load
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const responseType = urlParams.get('response_type');
-            const clientId = urlParams.get('client_id');
-            const redirectUri = urlParams.get('redirect_uri');
-            const scope = urlParams.get('scope');
-            const state = urlParams.get('state');
-            
-            if (responseType && clientId && redirectUri) {
-                // Store OAuth2 parameters
-                sessionStorage.setItem('oauth2_params', JSON.stringify({
-                    response_type: responseType,
-                    client_id: clientId,
-                    redirect_uri: redirectUri,
-                    scope: scope,
-                    state: state
-                }));
-            }
-        };
-
-        // Authenticate user
-        function authenticateUser() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const authResult = document.getElementById('auth-result');
-            
-            if (!username || !password) {
-                authResult.innerHTML = '<p style="color: #dc3545;">Please enter both username and password</p>';
-                return;
-            }
-            
-            // Simulate authentication
-            authResult.innerHTML = '<p style="color: #1e3c72;">Authenticating...</p>';
-            
-            setTimeout(() => {
-                if (username === 'alice' && password === 'password123') {
-                    authResult.innerHTML = '<p style="color: #28a745;">Authentication successful!</p>';
-                    
-                    // Show consent screen
-                    setTimeout(() => {
-                        document.getElementById('loginSection').style.display = 'none';
-                        document.getElementById('consentSection').style.display = 'block';
-                    }, 1000);
-                } else {
-                    authResult.innerHTML = '<p style="color: #dc3545;">Invalid username or password</p>';
-                }
-            }, 1500);
-        }
-
-        // Grant consent
-        function grantConsent() {
-            const consentResult = document.getElementById('consent-result');
-            consentResult.innerHTML = '<p style="color: #1e3c72;">Processing authorization...</p>';
-            
-            setTimeout(() => {
-                // Get stored OAuth2 parameters
-                const oauth2Params = JSON.parse(sessionStorage.getItem('oauth2_params'));
-                
-                if (!oauth2Params) {
-                    consentResult.innerHTML = '<p style="color: #dc3545;">OAuth2 parameters not found</p>';
-                    return;
-                }
-                
-                // Generate authorization code
-                const authCode = 'auth_code_' + Math.random().toString(36).substr(2, 9);
-                
-                // Redirect back to client application
-                consentResult.innerHTML = '<p style="color: #28a745;">Authorization granted! Redirecting back...</p>';
-                
-                setTimeout(() => {
-                    const redirectUrl = `${oauth2Params.redirect_uri}?code=${authCode}&state=${oauth2Params.state || ''}`;
-                    window.location.href = redirectUrl;
-                }, 1500);
-            }, 1500);
-        }
-
-        // Deny consent
-        function denyConsent() {
-            const consentResult = document.getElementById('consent-result');
-            consentResult.innerHTML = '<p style="color: #dc3545;">Authorization denied. Redirecting back...</p>';
-            
-            setTimeout(() => {
-                // Get stored OAuth2 parameters
-                const oauth2Params = JSON.parse(sessionStorage.getItem('oauth2_params'));
-                
-                if (oauth2Params) {
-                    const redirectUrl = `${oauth2Params.redirect_uri}?error=access_denied&state=${oauth2Params.state || ''}`;
-                    window.location.href = redirectUrl;
-                }
-            }, 1500);
-        }
-
-        // Allow Enter key to submit login form
-        document.addEventListener('DOMContentLoaded', function() {
-            const passwordField = document.getElementById('password');
-            passwordField.addEventListener('keyup', function(event) {
-                if (event.key === 'Enter') {
-                    authenticateUser();
-                }
-            });
-        });
-    </script>
 </body>
 </html>

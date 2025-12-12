@@ -6,30 +6,109 @@
     <title>Client Application (Badr)</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        body { background-color: #fff0f5; }
-        header { background: linear-gradient(135deg, #ff6b6b 0%, #ffa502 100%); }
-        .card { border-left: 5px solid #ff6b6b; }
+        body { 
+            background-color: #000; 
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        header { 
+            background: #111; 
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            border-bottom: 2px solid #333;
+        }
+        .card { 
+            border-left: 5px solid #333; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            border-radius: 10px;
+            background: #111;
+        }
+        
+        /* Provider option hover effect */
+        .provider-option:hover {
+            border-color: #444;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.7);
+        }
+        
+        /* Disabled provider styling */
+        .provider-option.disabled {
+            cursor: not-allowed;
+        }
+        
+        /* Selected provider styling */
+        .provider-option.selected {
+            border-color: #555;
+            background-color: #222;
+        }
+        
+        /* Button hover effects */
+        .api-btn:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+        
+        /* Result message styling */
+        .result.success {
+            background: #222;
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 8px;
+        }
+        
+        .result.error {
+            background: #222;
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 8px;
+        }
+        
+        .result.info {
+            background: #222;
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 8px;
+        }
+        
+        .welcome-message {
+            background: #111;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        
+        input, select {
+            background: #000;
+            color: #fff;
+            border: 1px solid #333;
+        }
+        
+        input:focus {
+            border-color: #555;
+            outline: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Client Application (Badr)</h1>
-            <p>OAuth2 Consumer Application</p>
+            <h1>👋 Welcome to Badr's App!</h1>
+            <p>The super duper awesome OAuth2 client application</p>
         </header>
 
         <div class="token-section">
-            <h2>Session Status</h2>
+            <h2>📊 Your Session Status</h2>
             <div class="token-inputs">
                 <div>
-                    <label for="sessionStatus">Current Session:</label>
+                    <label for="sessionStatus">Current Status:</label>
                     <input type="text" id="sessionStatus" value="Not logged in" readonly>
                 </div>
                 <div>
-                    <label for="userName">User:</label>
+                    <label for="userName">User Name:</label>
                     <input type="text" id="userName" value="None" readonly>
                 </div>
-                <button id="logoutBtn" onclick="logout()">Logout</button>
+                <button id="logoutBtn" onclick="logout()">🚪 Logout</button>
             </div>
         </div>
 
@@ -42,34 +121,105 @@
         <div class="tab-content">
             <!-- Login Tab -->
             <div id="login" class="tab-pane active">
-                <h2>Welcome to Badr's Application</h2>
+                <h2>🎉 Welcome to Badr's Super Cool App!</h2>
                 
                 <div class="endpoint-card card">
-                    <h3>Login with OAuth2</h3>
-                    <p>Secure third-party authentication</p>
-                    <button class="api-btn" onclick="loginWithOAuth2()" id="loginButton">Login via third party</button>
+                    <h3>🔐 Login with OAuth2</h3>
+                    <p>Secure third-party authentication (but don't worry, it's easy!)</p>
+                    
+                    <!-- Improved Provider selection UI with better design -->
+                    <div id="provider-selection">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h4>🤔 Which login method do you prefer?</h4>
+                            <p style="color: #aaa; margin-bottom: 25px;">Pick one of these fancy options below!</p>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 15px; margin: 20px 0;">
+                            <!-- Omar Auth Server option with improved styling -->
+                            <div class="provider-option" onclick="selectProvider('omar')" style="border: 1px solid #333; border-radius: 10px; padding: 15px; cursor: pointer;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 40px; height: 40px; background: #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; border: 1px solid #444;">
+                                        <span style="color: white; font-weight: bold;">O</span>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: bold; font-size: 16px;">Omar Auth Server</div>
+                                        <div style="font-size: 13px; color: #aaa;">Our built-in authentication system</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Google option with improved styling -->
+                            <div class="provider-option disabled" style="border: 1px solid #333; border-radius: 10px; padding: 15px; opacity: 0.6;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 40px; height: 40px; background: #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; border: 1px solid #444;">
+                                        <span style="color: white; font-weight: bold;">G</span>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: bold; font-size: 16px;">Google</div>
+                                        <div style="font-size: 13px; color: #aaa;">Sign in with your Google account</div>
+                                    </div>
+                                    <div style="margin-left: auto; background: #222; color: #fff; padding: 3px 8px; border-radius: 10px; font-size: 12px; font-weight: bold; border: 1px solid #444;">
+                                        Coming Soon
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- GitHub option with improved styling -->
+                            <div class="provider-option disabled" style="border: 1px solid #333; border-radius: 10px; padding: 15px; opacity: 0.6;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 40px; height: 40px; background: #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; border: 1px solid #444;">
+                                        <span style="color: white; font-weight: bold;">GH</span>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: bold; font-size: 16px;">GitHub</div>
+                                        <div style="font-size: 13px; color: #aaa;">Sign in with your GitHub account</div>
+                                    </div>
+                                    <div style="margin-left: auto; background: #222; color: #fff; padding: 3px 8px; border-radius: 10px; font-size: 12px; font-weight: bold; border: 1px solid #444;">
+                                        Coming Soon
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="result" id="provider-result" style="margin-top: 15px;"></div>
+                    </div>
+                    
+                    <!-- Improved login confirmation UI -->
+                    <div id="oauth-login-container" style="display: none; text-align: center;">
+                        <div style="background: #222; border-radius: 10px; padding: 20px; margin: 20px 0; border: 1px solid #333;">
+                            <h4 style="margin-top: 0;">🚀 Ready to Login?</h4>
+                            <p style="color: #aaa;">You've selected <span id="selected-provider-name" style="font-weight: bold;">Omar Auth Server</span></p>
+                            <p style="font-size: 14px; color: #888;">We'll take you to the authentication page now!</p>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+                            <button class="api-btn" onclick="initiateOAuthFlow()" id="loginButton" style="padding: 12px 25px;">🎉 Let's Go!</button>
+                            <button class="api-btn" onclick="showProviderSelection()" style="background: #333; padding: 12px 25px;">👈 Change My Mind</button>
+                        </div>
+                    </div>
+                    
                     <div class="result" id="login-result"></div>
                 </div>
             </div>
 
             <!-- Dashboard Tab -->
             <div id="dashboard" class="tab-pane">
-                <h2>User Dashboard</h2>
+                <h2>🏠 Your Super Awesome Dashboard</h2>
                 
                 <div class="endpoint-card card">
-                    <h3>Your Orders</h3>
-                    <p>View your recent orders</p>
-                    <button class="api-btn" onclick="loadOrders()">Load Orders</button>
+                    <h3>📦 Your Orders</h3>
+                    <p>Check out all the cool stuff you've ordered!</p>
+                    <button class="api-btn" onclick="loadOrders()">📋 Load My Orders</button>
                     <div class="result" id="orders-result"></div>
                 </div>
 
                 <div class="endpoint-card card">
-                    <h3>Create New Order</h3>
-                    <p>Place a new order</p>
+                    <h3>🛒 Create New Order</h3>
+                    <p>Want to buy something new? Go ahead!</p>
                     <div class="form-group">
-                        <input type="text" id="productName" placeholder="Product Name">
-                        <input type="number" id="productAmount" placeholder="Amount" step="0.01">
-                        <button class="api-btn" onclick="createOrder()">Create Order</button>
+                        <input type="text" id="productName" placeholder="What do you want to buy? 🤔">
+                        <input type="number" id="productAmount" placeholder="How much does it cost? 💰" step="0.01">
+                        <button class="api-btn" onclick="createOrder()">➕ Create Order</button>
                     </div>
                     <div class="result" id="create-order-result"></div>
                 </div>
@@ -77,19 +227,19 @@
 
             <!-- Profile Tab -->
             <div id="profile" class="tab-pane">
-                <h2>User Profile</h2>
+                <h2>👤 All About You!</h2>
                 
                 <div class="endpoint-card card">
-                    <h3>Profile Information</h3>
-                    <p>Your account details</p>
-                    <button class="api-btn" onclick="loadProfile()">Load Profile</button>
+                    <h3>🕵️ Profile Information</h3>
+                    <p>Let's see what we know about you!</p>
+                    <button class="api-btn" onclick="loadProfile()">📖 Load My Profile</button>
                     <div class="result" id="profile-result"></div>
                 </div>
             </div>
         </div>
 
         <footer>
-            <p>Client Application (Badr) - OAuth2 Consumer</p>
+            <p>💖 Made with love by Badr's App - OAuth2 Consumer Extraordinaire! 💖</p>
         </footer>
     </div>
 
@@ -99,13 +249,29 @@
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
             const state = urlParams.get('state');
+            const error = urlParams.get('error');
             
-            if (code) {
+            if (error) {
+                // Handle OAuth2 error with user-friendly message
+                let errorMessage = "Authentication failed";
+                if (error === 'access_denied') {
+                    errorMessage = "Access denied. You cancelled the authentication request.";
+                } else {
+                    errorMessage = `Authentication error: ${error}`;
+                }
+                
+                displayError({ message: "😢 " + errorMessage + " But don't worry, these things happen! Try again?" }, 'login-result');
+                // Show provider selection
+                showProviderSelection();
+            } else if (code) {
                 // We've been redirected back from the authorization server
+                document.getElementById('login-result').innerHTML = '<div style="padding: 15px; background: #222; border-radius: 5px; color: #fff; border: 1px solid #333; text-align: center;">🔄 Welcome back! Just a moment while we finish logging you in... 🎉</div>';
                 handleOAuth2Callback(code, state);
             } else {
                 // Check if we have a stored session
                 checkStoredSession();
+                // Show provider selection by default
+                showProviderSelection();
             }
         };
 
@@ -128,23 +294,76 @@
             });
         });
 
-        // Login with OAuth2
-        function loginWithOAuth2() {
+        // Show provider selection
+        function showProviderSelection() {
+            document.getElementById('provider-selection').style.display = 'block';
+            document.getElementById('oauth-login-container').style.display = 'none';
+            document.getElementById('provider-result').innerHTML = '';
+        }
+
+        // Select OAuth provider
+        function selectProvider(provider) {
+            // Remove selected class from all providers
+            const providers = document.querySelectorAll('.provider-option');
+            providers.forEach(p => p.classList.remove('selected'));
+            
+            if (provider === 'omar') {
+                // Add selected class to the clicked provider
+                event.currentTarget.classList.add('selected');
+                
+                // Store selected provider
+                sessionStorage.setItem('oauth2_provider', 'omar');
+                
+                // Update the confirmation message with provider name
+                document.getElementById('selected-provider-name').textContent = 'Omar Auth Server';
+                
+                // Show success message
+                document.getElementById('provider-result').innerHTML = '<div style="padding: 10px; background: #222; border-radius: 5px; color: #fff; border: 1px solid #333;">✅ Awesome choice! Omar Auth Server selected. You\'re one step closer to fun! 🎉</div>';
+                
+                // Hide provider selection and show login button
+                document.getElementById('provider-selection').style.display = 'none';
+                document.getElementById('oauth-login-container').style.display = 'block';
+            } else if (provider === 'google' || provider === 'github') {
+                document.getElementById('provider-result').innerHTML = '<div style="padding: 10px; background: #222; border-radius: 5px; color: #fff; border: 1px solid #333;">⚠️ Oh no! This provider isn\'t ready yet. But we\'re working on it! 🛠️</div>';
+            } else {
+                document.getElementById('provider-result').innerHTML = '<div style="padding: 10px; background: #222; border-radius: 5px; color: #fff; border: 1px solid #333;">❌ Oops! That\'s not a valid provider. Try again! 🤔</div>';
+            }
+        }
+
+        // Initiate OAuth flow after provider selection
+        function initiateOAuthFlow() {
             const loginButton = document.getElementById('loginButton');
             loginButton.disabled = true;
-            loginButton.textContent = 'Redirecting...';
+            loginButton.textContent = 'Hold on tight! 🎢';
+            loginButton.style.opacity = '0.7';
+            
+            // Show a loading message
+            const loginResult = document.getElementById('login-result');
+            loginResult.innerHTML = '<div style="padding: 15px; background: #222; border-radius: 5px; color: #fff; border: 1px solid #333; text-align: center;">🔄 Getting everything ready for your login adventure... Off we go! 🚀</div>';
+            
+            // Get selected provider
+            const provider = sessionStorage.getItem('oauth2_provider');
             
             // Generate state parameter for security
             const state = Math.random().toString(36).substring(2, 15);
             sessionStorage.setItem('oauth2_state', state);
             
-            // Redirect to authorization server
+            // Set up redirect URI
             const redirectUri = encodeURIComponent('http://localhost:8080/badr_client_app.html');
-            const authUrl = `http://localhost:8080/omar_auth_server.html?response_type=code&client_id=badr_app&redirect_uri=${redirectUri}&scope=profile read:orders write:orders&state=${state}`;
             
+            let authUrl;
+            if (provider === 'omar') {
+                // Redirect to Omar's authorization server
+                authUrl = `http://localhost:3000/authorize?response_type=code&client_id=badr_app&redirect_uri=${redirectUri}&scope=profile%20read:orders%20write:orders&state=${state}`;
+            } else {
+                // Default to Omar for any other case
+                authUrl = `http://localhost:3000/authorize?response_type=code&client_id=badr_app&redirect_uri=${redirectUri}&scope=profile%20read:orders%20write:orders&state=${state}`;
+            }
+            
+            // Add a slight delay to show the loading message
             setTimeout(() => {
                 window.location.href = authUrl;
-            }, 1000);
+            }, 2000);
         }
 
         // Handle OAuth2 callback
@@ -152,7 +371,7 @@
             // Verify state parameter
             const storedState = sessionStorage.getItem('oauth2_state');
             if (state !== storedState) {
-                displayError({message: "Invalid state parameter. Possible CSRF attack."}, 'login-result');
+                displayError({ message: "🚨 Security alert! State parameter doesn't match. This might be a sneaky attack! 🛡️" }, 'login-result');
                 return;
             }
             
@@ -160,51 +379,73 @@
             exchangeCodeForTokens(code);
         }
 
-        // Exchange code for tokens
+        // Exchange authorization code for tokens
         function exchangeCodeForTokens(code) {
-            displayResult({message: "Exchanging authorization code for tokens..."}, 'login-result');
+            displayInfo({ message: "🔑 Magic time! Exchanging your special code for shiny tokens... ✨" }, 'login-result');
             
-            // Simulate API call to token endpoint
-            setTimeout(() => {
-                // Generate tokens
-                const accessToken = generateAccessToken();
-                const refreshToken = 'refresh_' + Math.random().toString(36).substr(2, 15);
-                
-                // Store tokens
-                localStorage.setItem('access_token', accessToken);
-                localStorage.setItem('refresh_token', refreshToken);
-                
-                // Update session status
-                document.getElementById('sessionStatus').value = 'Logged in';
-                document.getElementById('userName').value = 'Alice';
-                
-                // Show success message
-                displayResult({
-                    message: "Authentication successful!",
-                    access_token: accessToken.substring(0, 20) + "...",
-                    refresh_token: refreshToken.substring(0, 20) + "..."
-                }, 'login-result');
-                
-                // Switch to dashboard tab
-                switchTab('dashboard');
-            }, 1500);
+            // Call the real token endpoint
+            fetch('http://localhost:3000/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    code: code,
+                    redirect_uri: 'http://localhost:8080/badr_client_app.html',
+                    client_id: 'badr_app'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.access_token) {
+                    // Store real tokens
+                    localStorage.setItem('accessToken', data.access_token);
+                    if (data.refresh_token) {
+                        localStorage.setItem('refreshToken', data.refresh_token);
+                    }
+                    
+                    // Update session status
+                    document.getElementById('sessionStatus').value = 'Logged in';
+                    document.getElementById('userName').value = 'Alice';
+                    
+                    // Show success message
+                    displayResult({
+                        message: "🎉 Hooray! You're now logged in and ready for adventures!",
+                        access_token: data.access_token.substring(0, 20) + "...",
+                        refresh_token: data.refresh_token ? data.refresh_token.substring(0, 20) + "..." : "Not provided"
+                    }, 'login-result');
+                    
+                    // Switch to dashboard tab
+                    switchTab('dashboard');
+                } else {
+                    displayError({ message: "😱 Oh no! Token exchange failed: " + JSON.stringify(data) }, 'login-result');
+                }
+            })
+            .catch(error => {
+                displayError({ message: "🔌 Network error during token exchange: " + error.toString() }, 'login-result');
+            });
         }
 
         // Check for stored session
         function checkStoredSession() {
-            const accessToken = localStorage.getItem('access_token');
+            const accessToken = localStorage.getItem('accessToken');
             if (accessToken) {
                 document.getElementById('sessionStatus').value = 'Logged in';
                 document.getElementById('userName').value = 'Alice';
                 switchTab('dashboard');
+                
+                // Show welcome message
+                document.getElementById('login-result').innerHTML = '<div style="padding: 15px; background: #222; border-radius: 5px; color: #fff; border: 1px solid #333; text-align: center;">👋 Welcome back, friend! You\'re already logged in. Ready for some fun? 🎉</div>';
             }
         }
 
         // Logout
         function logout() {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
             sessionStorage.removeItem('oauth2_state');
+            sessionStorage.removeItem('oauth2_provider');
             
             document.getElementById('sessionStatus').value = 'Not logged in';
             document.getElementById('userName').value = 'None';
@@ -216,43 +457,47 @@
             document.getElementById('create-order-result').innerHTML = '';
             
             switchTab('login');
+            
+            // Show logout confirmation
+            document.getElementById('login-result').innerHTML = '<div style="padding: 15px; background: #222; border-radius: 5px; color: #fff; border: 1px solid #333; text-align: center;">✅ You\'ve been successfully logged out! Come back soon! 👋</div>';
         }
 
         // Load orders
         function loadOrders() {
-            const accessToken = localStorage.getItem('access_token');
+            const accessToken = localStorage.getItem('accessToken');
             
             if (!accessToken) {
-                displayError({message: "Please log in first"}, 'orders-result');
+                displayError({ message: "🔐 Whoops! You need to log in first before seeing your orders!" }, 'orders-result');
                 return;
             }
             
-            displayResult({message: "Loading orders..."}, 'orders-result');
-            
-            // Simulate API call
-            setTimeout(() => {
-                const result = {
-                    orders: [
-                        {id: "order-001", product: "Laptop", amount: 1200.00, status: "delivered"},
-                        {id: "order-002", product: "Mouse", amount: 25.99, status: "pending"}
-                    ],
-                    total: 2
-                };
-                
-                displayResult({
-                    status: 200,
-                    statusText: "OK",
-                    data: result
-                }, 'orders-result');
-            }, 1000);
+            // Make real API call to Resource Server
+            fetch('http://localhost:5000/api/orders', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            })
+            .then(response => {
+                return response.json().then(data => ({
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: data
+                }));
+            })
+            .then(result => {
+                displayResult(result, 'orders-result');
+            })
+            .catch(error => {
+                displayError({ message: "🔌 Network error: " + error.toString() }, 'orders-result');
+            });
         }
 
         // Create order
         function createOrder() {
-            const accessToken = localStorage.getItem('access_token');
+            const accessToken = localStorage.getItem('accessToken');
             
             if (!accessToken) {
-                displayError({message: "Please log in first"}, 'create-order-result');
+                displayError({ message: "🔐 Hey there! Log in first before creating orders, okay?" }, 'create-order-result');
                 return;
             }
             
@@ -260,61 +505,71 @@
             const amount = document.getElementById('productAmount').value;
             
             if (!product || !amount) {
-                displayError({message: "Product name and amount are required"}, 'create-order-result');
+                displayError({ message: "🛒 Please tell us what you want to buy and how much it costs!" }, 'create-order-result');
                 return;
             }
             
-            displayResult({message: "Creating order..."}, 'create-order-result');
-            
-            // Simulate API call
-            setTimeout(() => {
-                const result = {
-                    id: "order-" + Math.floor(Math.random() * 1000),
-                    user_id: "user-123",
+            // Make real API call to Resource Server
+            fetch('http://localhost:5000/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({
                     product: product,
-                    amount: parseFloat(amount),
-                    status: "pending",
-                    date: new Date().toISOString()
-                };
+                    amount: parseFloat(amount)
+                })
+            })
+            .then(response => {
+                return response.json().then(data => ({
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: data
+                }));
+            })
+            .then(result => {
+                displayResult(result, 'create-order-result');
                 
-                displayResult({
-                    status: 201,
-                    statusText: "Created",
-                    data: result
-                }, 'create-order-result');
-                
-                // Clear form
-                document.getElementById('productName').value = '';
-                document.getElementById('productAmount').value = '';
-            }, 1000);
+                // Clear form if successful
+                if (result.status === 201) {
+                    document.getElementById('productName').value = '';
+                    document.getElementById('productAmount').value = '';
+                }
+            })
+            .catch(error => {
+                displayError({ message: "🔌 Network error: " + error.toString() }, 'create-order-result');
+            });
         }
 
         // Load profile
         function loadProfile() {
-            const accessToken = localStorage.getItem('access_token');
+            const accessToken = localStorage.getItem('accessToken');
             
             if (!accessToken) {
-                displayError({message: "Please log in first"}, 'profile-result');
+                displayError({ message: "🔐 Oops! You need to be logged in to see your profile!" }, 'profile-result');
                 return;
             }
             
-            displayResult({message: "Loading profile..."}, 'profile-result');
-            
-            // Simulate API call
-            setTimeout(() => {
-                const result = {
-                    user_id: "user-123",
-                    email: "alice@example.com",
-                    name: "Alice",
-                    scopes: ["profile", "read:orders", "write:orders"]
-                };
-                
-                displayResult({
-                    status: 200,
-                    statusText: "OK",
-                    data: result
-                }, 'profile-result');
-            }, 1000);
+            // Make real API call to Resource Server
+            fetch('http://localhost:5000/api/me', {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            })
+            .then(response => {
+                return response.json().then(data => ({
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: data
+                }));
+            })
+            .then(result => {
+                displayResult(result, 'profile-result');
+            })
+            .catch(error => {
+                displayError({ message: "🔌 Network error: " + error.toString() }, 'profile-result');
+            });
         }
 
         // Switch tab
@@ -329,26 +584,6 @@
             document.getElementById(tabId).classList.add('active');
         }
 
-        // Generate sample access token
-        function generateAccessToken() {
-            const header = btoa(JSON.stringify({
-                alg: "RS256",
-                typ: "JWT",
-                kid: "key-2024-01"
-            }));
-            
-            const payload = btoa(JSON.stringify({
-                iss: "http://localhost:3000",
-                aud: "api://resource-server",
-                sub: "user-123",
-                exp: Math.floor(Date.now() / 1000) + 3600,
-                iat: Math.floor(Date.now() / 1000),
-                scope: "profile read:orders write:orders"
-            }));
-            
-            return `${header}.${payload}.signature`;
-        }
-
         // Display results
         function displayResult(data, elementId) {
             const element = document.getElementById(elementId);
@@ -361,6 +596,13 @@
             const element = document.getElementById(elementId);
             element.innerHTML = '<pre>' + JSON.stringify(error, null, 2) + '</pre>';
             element.className = 'result error';
+        }
+
+        // Display info
+        function displayInfo(info, elementId) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = '<pre>' + JSON.stringify(info, null, 2) + '</pre>';
+            element.className = 'result info';
         }
     </script>
 </body>

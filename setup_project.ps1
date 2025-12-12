@@ -163,7 +163,10 @@ Write-Host "2. Éditer .env avec les valeurs d'Omar:" -ForegroundColor White
 Write-Host "   notepad .env" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "3. Lancer l'application:" -ForegroundColor White
-Write-Host "   python app.py" -ForegroundColor Yellow
+Write-Host "   Option A - Un seul composant:" -ForegroundColor Gray
+Write-Host "     python app.py" -ForegroundColor Yellow
+Write-Host "   Option B - Tous les composants (recommandé):" -ForegroundColor Gray
+Write-Host "     python start_all.py" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "4. Tester l'API:" -ForegroundColor White
 Write-Host "   curl http://localhost:5000/api/health" -ForegroundColor Yellow
