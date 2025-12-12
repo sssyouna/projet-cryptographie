@@ -6,7 +6,7 @@
 
 ---
 
-## 📋 Table des Matières
+## Table des Matières
 
 1. [Vue d'ensemble](#vue-densemble)
 2. [Architecture](#architecture)
@@ -21,18 +21,18 @@
 
 ---
 
-## 🎯 Vue d'ensemble
+## Vue d'ensemble
 
 Le Resource Server est responsable de :
-- ✅ **Valider les access tokens JWT** émis par l'Authorization Server (Omar)
-- ✅ **Vérifier les scopes OAuth2** pour l'autorisation
-- ✅ **Vérifier les rôles** pour l'autorisation fine-grained
-- ✅ **Protéger les ressources** de l'API
-- ✅ **Retourner des erreurs OAuth2 standardisées** (RFC 6750)
+- **Valider les access tokens JWT** émis par l'Authorization Server (Omar)
+- **Vérifier les scopes OAuth2** pour l'autorisation
+- **Vérifier les rôles** pour l'autorisation fine-grained
+- **Protéger les ressources** de l'API
+- **Retourner des erreurs OAuth2 standardisées** (RFC 6750)
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────┐         ┌──────────────────┐         ┌─────────────────┐
@@ -99,7 +99,7 @@ Le Resource Server est responsable de :
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### Prérequis
 
@@ -134,7 +134,7 @@ nano .env
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### Variables d'environnement (.env)
 
@@ -163,7 +163,7 @@ OAUTH_AUDIENCE=api://resource-server
 
 ---
 
-## 🏃 Lancer l'application
+## Lancer l'application
 
 ### Mode développement
 
@@ -189,9 +189,9 @@ python3 start_all.py
 ```
 
 Ce script démarre automatiquement :
-- 🔐 **Authorization Server (Omar)** sur `http://localhost:3000`
-- 🛡️ **Resource Server (Votre API)** sur `http://localhost:5000`
-- 📱 **Frontend Dashboard** sur `http://localhost:8080`
+- **Authorization Server (Omar)** sur `http://localhost:3000`
+- **Resource Server (Votre API)** sur `http://localhost:5000`
+- **Frontend Dashboard** sur `http://localhost:8080`
 
 ### Mode production (avec gunicorn)
 
@@ -205,7 +205,7 @@ L'API sera accessible sur `http://localhost:5000`
 
 ---
 
-## 📡 Endpoints API
+## Endpoints API
 
 ### Endpoints Publics (pas d'authentification)
 
@@ -369,7 +369,7 @@ Liste tous les utilisateurs (admin)
 
 ---
 
-## 🔐 Authentification & Autorisation
+## Authentification & Autorisation
 
 ### Format du Token JWT
 
@@ -394,12 +394,12 @@ Les tokens doivent contenir les claims suivants:
 
 Le Resource Server vérifie automatiquement:
 
-1. ✅ **Signature** - avec clé publique JWKS
-2. ✅ **Issuer (iss)** - doit matcher `OAUTH_ISSUER`
-3. ✅ **Audience (aud)** - doit contenir `OAUTH_AUDIENCE`
-4. ✅ **Expiration (exp)** - token non expiré
-5. ✅ **Not Before (nbf)** - token déjà valide
-6. ✅ **Algorithm** - seulement RS256 (pas "none")
+1. **Signature** - avec clé publique JWKS
+2. **Issuer (iss)** - doit matcher `OAUTH_ISSUER`
+3. **Audience (aud)** - doit contenir `OAUTH_AUDIENCE`
+4. **Expiration (exp)** - token non expiré
+5. **Not Before (nbf)** - token déjà valide
+6. **Algorithm** - seulement RS256 (pas "none")
 
 ### Scopes OAuth2
 
@@ -419,7 +419,7 @@ Le Resource Server vérifie automatiquement:
 
 ---
 
-## 🧪 Tests
+## Tests
 
 ### Lancer les tests
 
@@ -439,14 +439,14 @@ pytest tests/ -v -k "not skip"
 
 ### Tests implémentés
 
-- ✅ Endpoints publics accessibles
-- ✅ Endpoints protégés → 401 sans token
-- ✅ Token malformé → 401
-- ✅ Token expiré → 401 (avec mock)
-- ✅ Scope insuffisant → 403 (avec mock)
-- ✅ Role insuffisant → 403 (avec mock)
-- ✅ Algorithm "none" rejeté
-- ✅ Tokens jamais loggés
+- Endpoints publics accessibles
+- Endpoints protégés → 401 sans token
+- Token malformé → 401
+- Token expiré → 401 (avec mock)
+- Scope insuffisant → 403 (avec mock)
+- Role insuffisant → 403 (avec mock)
+- Algorithm "none" rejeté
+- Tokens jamais loggés
 
 ### Mock JWKS pour tests
 
@@ -463,32 +463,32 @@ def mock_jwks(mocker):
 
 ---
 
-## 🛡️ Sécurité
+## Sécurité
 
 ### Mesures implémentées
 
-1. ✅ **Validation stricte des JWT**
+1. **Validation stricte des JWT**
    - Signature RSA (RS256)
    - Vérification issuer, audience, expiration
    - Rejet de l'algorithme "none"
 
-2. ✅ **Gestion des erreurs OAuth2 standard (RFC 6750)**
+2. **Gestion des erreurs OAuth2 standard (RFC 6750)**
    - 401 avec `WWW-Authenticate` header
    - 403 avec description du scope requis
    - Messages d'erreur standardisés
 
-3. ✅ **Pas de logging des tokens**
+3. **Pas de logging des tokens**
    - Logs anonymisés (user ID seulement)
    - Tokens jamais écrits en clair
 
-4. ✅ **Cache JWKS intelligent**
+4. **Cache JWKS intelligent**
    - TTL de 1 heure
    - Rafraîchissement automatique
 
-5. ✅ **Tolérance de clock skew**
+5. **Tolérance de clock skew**
    - ±60 secondes pour exp/nbf
 
-6. ✅ **CORS configuré**
+6. **CORS configuré**
    - Seulement pour origines autorisées (en prod)
 
 ### Bonnes pratiques à implémenter (production)
@@ -504,7 +504,7 @@ def mock_jwks(mocker):
 
 ---
 
-## 🔗 Intégration avec les autres composants
+## Intégration avec les autres composants
 
 ### Avec Authorization Server (Omar)
 
@@ -533,7 +533,7 @@ def mock_jwks(mocker):
 
 ---
 
-## 📞 Support & Debugging
+## Support & Debugging
 
 ### Problèmes courants
 
@@ -572,7 +572,7 @@ python app.py
 
 ---
 
-## 📚 Références
+## Références
 
 - [RFC 6749 - OAuth 2.0](https://tools.ietf.org/html/rfc6749)
 - [RFC 6750 - Bearer Token Usage](https://tools.ietf.org/html/rfc6750)
@@ -582,7 +582,7 @@ python app.py
 
 ---
 
-## 📝 TODO
+## TODO
 
 - [ ] Obtenir config OAuth2 d'Omar
 - [ ] Tests d'intégration avec l'IdP

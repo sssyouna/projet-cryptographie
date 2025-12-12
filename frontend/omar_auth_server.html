@@ -79,27 +79,27 @@
 </head>
 <body>
     <div class="login-form">
-        <div class="fun-icon">🔐</div>
-        <h2>Hey there! 👋</h2>
+        <div class="fun-icon"></div>
+        <h2>Hey there!</h2>
         <p>Looks like you want to log in to <strong>badr_app</strong></p>
         
         <div class="client-info">
-            <p>🔧 They want to access:</p>
+            <p>They want to access:</p>
             <p><strong>profile read:orders write:orders</strong></p>
         </div>
         
         <form method="POST" action="/authenticate">
             <input type="hidden" name="auth_req_id" value="auth_req_example">
-            <label>👤 Username:</label>
+            <label>Username:</label>
             <input type="text" name="username" placeholder="Type your username here..." required>
-            <label>🔑 Password:</label>
+            <label>Password:</label>
             <input type="password" name="password" placeholder="Shhh... secret password..." required>
-            <button type="submit">🎉 Let me in!</button>
+            <button type="submit">Let me in!</button>
         </form>
         
         <div class="demo-creds">
-            <p>💡 Hint: Try <strong>alice</strong> with <strong>password123</strong></p>
-            <p>(Don't worry, we won't tell anyone! 😇)</p>
+            <p>Hint: Try <strong>alice</strong> with <strong>password123</strong></p>
+            <p>(Don't worry, we won't tell anyone!)</p>
         </div>
     </div>
 </body>
