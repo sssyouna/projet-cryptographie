@@ -1,135 +1,184 @@
-# Resource Server API - OAuth2/OIDC Protected
+# OAuth2 System - Complete Implementation
 
-> **Auteur:** Youness  
-> **Projet:** Système OAuth2/OIDC - Partie Resource Server  
-> **Description:** API REST protégée par OAuth2 qui valide les JWT access tokens
-
----
-
-## Table des Matières
-
-1. [Vue d'ensemble](#vue-densemble)
-2. [Architecture](#architecture)
-3. [Installation](#installation)
-4. [Configuration](#configuration)
-5. [Lancer l'application](#lancer-lapplication)
-6. [Endpoints API](#endpoints-api)
-7. [Authentification & Autorisation](#authentification--autorisation)
-8. [Tests](#tests)
-9. [Sécurité](#sécurité)
-10. [Intégration avec les autres composants](#intégration)
+> **Author:** Youness  
+> **Project:** OAuth2/OIDC System with Authorization Server, Resource Server, and Client Application  
+> **Description:** Complete OAuth2 implementation with all components: Authorization Server, Resource Server API, and Client Dashboard
 
 ---
 
-## Vue d'ensemble
+## Table of Contents
 
-Le Resource Server est responsable de :
-- **Valider les access tokens JWT** émis par l'Authorization Server (Omar)
-- **Vérifier les scopes OAuth2** pour l'autorisation
-- **Vérifier les rôles** pour l'autorisation fine-grained
-- **Protéger les ressources** de l'API
-- **Retourner des erreurs OAuth2 standardisées** (RFC 6750)
+1. [Overview](#overview)
+2. [System Architecture](#system-architecture)
+3. [Project Structure](#project-structure)
+4. [Installation](#installation)
+5. [Configuration](#configuration)
+6. [Running the Application](#running-the-application)
+7. [API Endpoints](#api-endpoints)
+8. [Authentication & Authorization](#authentication--authorization)
+9. [Security](#security)
 
 ---
 
-## Architecture
+## Overview
+
+This project is a complete OAuth2 implementation with three main components:
+
+1. **Authorization Server** - Handles user authentication and token issuance
+2. **Resource Server** - Protects API resources with JWT token validation
+3. **Client Application** - Provides a dashboard for interacting with the OAuth2 system
+
+The system demonstrates the complete OAuth2 Authorization Code flow with JWT tokens for secure API access.
+
+---
+
+## System Architecture
 
 ```
-┌─────────────┐         ┌──────────────────┐         ┌─────────────────┐
-│   Client    │         │ Authorization    │         │   Resource      │
-│   (Badr)    │────────▶│   Server (Omar)  │         │   Server (Toi)  │
-│             │  Login  │                  │         │                 │
-└─────────────┘         └──────────────────┘         └─────────────────┘
-       │                         │                            ▲
-       │   1. Redirige vers      │                            │
-       │      /authorize          │                            │
-       │◀────────────────────────┘                            │
-       │                                                       │
-       │   2. User login & consent                            │
-       │                                                       │
-       │   3. Reçoit authorization code                       │
-       │                                                       │
-       │   4. Échange code → access_token                     │
-       │──────────────────────────────▶                       │
-       │                                                       │
-       │   5. Appelle API avec Bearer token                   │
-       │───────────────────────────────────────────────────────▶
-       │                                                       │
-       │   6. Vérifie token (signature, exp, aud, scope)      │
-       │                                                       │
-       │◀─────────────────────────────────────────────────────│
-       │   7. Retourne ressource protégée                     │
+┌────────────────┐    ┌────────────────────┐    ┌─────────────────┐
+│   Client App   │    │  Authorization     │    │   Resource      │
+│   (Badr)       │    │  Server (Omar)     │    │   Server        │
+│                │    │                    │    │                 │
+└────────────────┘    └────────────────────┘    └─────────────────┘
+       │                      │                         ▲
+       │ 1. Redirect to       │                         │
+       │    /authorize        │                         │
+       │◀─────────────────────┘                         │
+       │                                                │
+       │ 2. User login & consent                       │
+       │                                                │
+       │ 3. Receive authorization code                  │
+       │                                                │
+       │ 4. Exchange code → access_token                │
+       │───────────────────────────────────────────────▶│
+       │                                                │
+       │ 5. Call API with Bearer token                  │
+       │────────────────────────────────────────────────────────────────▶
+       │                                                │
+       │ 6. Validate token (signature, exp, aud, scope) │
+       │                                                │
+       │◀────────────────────────────────────────────────────────────────
+       │ 7. Return protected resource                   │
 ```
 
-### Flux de validation du token
+## Project Structure
 
 ```
-1. Client envoie: Authorization: Bearer <access_token>
-                        │
-                        ▼
-2. Resource Server extrait le token
-                        │
-                        ▼
-3. Décode header JWT pour obtenir 'kid'
-                        │
-                        ▼
-4. Récupère clé publique depuis JWKS (avec cache)
-                        │
-                        ▼
-5. Vérifie signature + iss + aud + exp + nbf
-                        │
-                   ┌────┴────┐
-                   │         │
-              Valid     Invalid
-                   │         │
-                   ▼         ▼
-           6. Vérifie    Return 401
-              scopes         │
-                   │         │
-              ┌────┴────┐    │
-              │         │    │
-         Sufficient  Insufficient
-              │         │    │
-              ▼         ▼    │
-      Return 200   Return 403│
-                              │
-                              ▼
-                    WWW-Authenticate header
+project/
+├── app.py                 # Resource Server API implementation
+├── auth_server.py         # Authorization Server implementation
+├── db.py                  # Database management functions
+├── user_management.py     # User management functions
+├── start_all.py           # Script to start all system components
+├── requirements.txt       # Python dependencies
+├── .env.example          # Environment variable examples
+├── setup_project.ps1      # Automated setup script
+├── QUICKSTART.md         # Quick start guide
+├── oauth2.db             # SQLite database
+│
+├── docs/
+│   ├── API.md            # Detailed API documentation
+│   └── SECURITY.md       # Security documentation
+│
+├── frontend/
+│   ├── index.html         # Main dashboard page
+│   ├── omar_auth_server.html  # Authorization Server interface
+│   ├── resource_server.html   # Resource Server interface
+│   ├── badr_client_app.html   # Client application interface
+│   ├── app.js             # Client-side JavaScript
+│   ├── styles.css         # CSS styling
+│   └── server.py          # Simple web server for frontend
+│
+└── venv/                 # Virtual environment (gitignored)
+```
+
+---
+
+### Token Validation Flow
+
+```
+1. Client sends: Authorization: Bearer <access_token>
+                       │
+                       ▼
+2. Resource Server extracts the token
+                       │
+                       ▼
+3. Decode JWT header to get 'kid'
+                       │
+                       ▼
+4. Retrieve public key from JWKS (with cache)
+                       │
+                       ▼
+5. Verify signature + iss + aud + exp + nbf
+                       │
+                  ┌────┴────┐
+                  │         │
+             Valid     Invalid
+                  │         │
+                  ▼         ▼
+          6. Verify     Return 401
+             scopes         │
+                  │         │
+             ┌────┴────┐    │
+             │         │    │
+        Sufficient  Insufficient
+             │         │    │
+             ▼         ▼    │
+     Return 200   Return 403│
+                             │
+                             ▼
+                   WWW-Authenticate header
 ```
 
 ---
 
 ## Installation
 
-### Prérequis
+### Prerequisites
 
 - Python 3.9+
 - pip
-- virtualenv (recommandé)
+- virtualenv (recommended)
 
-### Étapes
+### Automated Setup (Windows)
+
+On Windows, you can use the automated setup script:
+
+```powershell
+# Run the setup script
+./setup_project.ps1
+```
+
+This script will:
+- Create the project structure
+- Set up a virtual environment
+- Install dependencies
+- Create the .env file from .env.example
+
+### Manual Setup
 
 ```bash
-# 1. Cloner le repo (ou créer le dossier)
-mkdir resource-server && cd resource-server
-
-# 2. Créer environnement virtuel
+# 1. Create virtual environment
 python -m venv venv
 
-# 3. Activer l'environnement
+# 2. Activate the environment
 # Linux/Mac:
 source venv/bin/activate
 # Windows:
 venv\Scripts\activate
 
-# 4. Installer les dépendances
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# 5. Copier la config
+# 4. Copy configuration
 cp .env.example .env
+# On Windows:
+copy .env.example .env
 
-# 6. Éditer .env avec les valeurs d'Omar (IdP)
+# 5. Edit .env with Omar's values (IdP)
 nano .env
+# On Windows:
+notepad .env
 ```
 
 ---
@@ -163,56 +212,62 @@ OAUTH_AUDIENCE=api://resource-server
 
 ---
 
-## Lancer l'application
+## Running the Application
 
-### Mode développement
+### Development Mode
 
-#### Lancer un seul composant
+#### Running Individual Components
 ```bash
-# Avec Flask directement
+# Run Authorization Server (Omar)
+python auth_server.py
+
+# Run Resource Server API
 python app.py
 
-# Ou avec flask run
-export FLASK_APP=app.py
-flask run --port 5000
+# Run Frontend Dashboard
+python frontend/server.py
 ```
 
-#### Lancer tous les composants du système OAuth2
-Pour démarrer le système complet avec tous les composants (Authorization Server, Resource Server, et Frontend), utilisez le script de démarrage :
+#### Running All Components
+To start the complete system with all components (Authorization Server, Resource Server, and Frontend), use the start script:
 
 ```bash
-# Sur Windows
+# On Windows
 python start_all.py
 
-# Sur Linux/Mac
+# On Linux/Mac
 python3 start_all.py
 ```
 
-Ce script démarre automatiquement :
-- **Authorization Server (Omar)** sur `http://localhost:3000`
-- **Resource Server (Votre API)** sur `http://localhost:5000`
-- **Frontend Dashboard** sur `http://localhost:8080`
+This script automatically starts:
+- **Authorization Server (Omar)** on `http://localhost:3000`
+- **Resource Server API** on `http://localhost:5000`
+- **Frontend Dashboard** on `http://localhost:8080`
 
-### Mode production (avec gunicorn)
+### Production Mode (with waitress for Windows compatibility)
+
+The project uses `waitress` for Windows compatibility in production:
 
 ```bash
-pip install gunicorn
+# Install dependencies (if not already installed)
+pip install -r requirements.txt
 
-gunicorn -w 4 -b 0.0.0.0:5000 app:app
+# Run with waitress
+waitress-serve --host=0.0.0.0 --port=5000 app:app
 ```
 
-L'API sera accessible sur `http://localhost:5000`
+The API will be accessible on `http://localhost:5000`
 
 ---
 
-## Endpoints API
+## API Endpoints
 
-### Endpoints Publics (pas d'authentification)
+### Public Endpoints (no authentication required)
 
 #### `GET /api/health`
-Health check du service
+Service health check
 
-**Réponse:**
+**Response:**
 ```json
 {
   "status": "healthy",
@@ -222,31 +277,31 @@ Health check du service
 ```
 
 #### `GET /api/public`
-Endpoint de démonstration public
+Public demonstration endpoint
 
-**Réponse:**
+**Response:**
 ```json
 {
-  "message": "Ceci est un endpoint public",
-  "info": "Pas d'authentification requise"
+  "message": "This is a public endpoint",
+  "info": "No authentication required"
 }
 ```
 
 ---
 
-### Endpoints Protégés
+### Protected Endpoints
 
 #### `GET /api/me`
-Récupère les informations de l'utilisateur connecté
+Retrieve information of the authenticated user
 
-**Scope requis:** `profile` ou `openid`
+**Required Scope:** `profile` or `openid`
 
 **Headers:**
 ```
 Authorization: Bearer <access_token>
 ```
 
-**Réponse (200):**
+**Response (200):**
 ```json
 {
   "user_id": "user-123",
@@ -257,23 +312,23 @@ Authorization: Bearer <access_token>
 }
 ```
 
-**Erreurs:**
-- `401` - Token absent ou invalide
-- `403` - Scope insuffisant
+**Errors:**
+- `401` - Missing or invalid token
+- `403` - Insufficient scope
 
 ---
 
 #### `GET /api/orders`
-Liste les commandes de l'utilisateur
+List user's orders
 
-**Scope requis:** `read:orders`
+**Required Scope:** `read:orders`
 
 **Headers:**
 ```
 Authorization: Bearer <access_token>
 ```
 
-**Réponse (200):**
+**Response (200):**
 ```json
 {
   "orders": [
@@ -293,9 +348,9 @@ Authorization: Bearer <access_token>
 ---
 
 #### `POST /api/orders`
-Crée une nouvelle commande
+Create a new order
 
-**Scope requis:** `write:orders`
+**Required Scope:** `write:orders`
 
 **Headers:**
 ```
@@ -311,7 +366,7 @@ Content-Type: application/json
 }
 ```
 
-**Réponse (201):**
+**Response (201):**
 ```json
 {
   "id": "order-003",
@@ -323,19 +378,19 @@ Content-Type: application/json
 }
 ```
 
-**Erreurs:**
-- `400` - Champs requis manquants
-- `401` - Token invalide
-- `403` - Scope insuffisant
+**Errors:**
+- `400` - Missing required fields
+- `401` - Invalid token
+- `403` - Insufficient scope
 
 ---
 
 #### `GET /api/admin/stats`
-Statistiques administrateur
+Administrator statistics
 
-**Role requis:** `admin`
+**Required Role:** `admin`
 
-**Réponse (200):**
+**Response (200):**
 ```json
 {
   "total_users": 150,
@@ -348,12 +403,12 @@ Statistiques administrateur
 ---
 
 #### `GET /api/admin/users`
-Liste tous les utilisateurs (admin)
+List all users (admin only)
 
-**Scope requis:** `admin:read`  
-**Role requis:** `admin`
+**Required Scope:** `admin:read`  
+**Required Role:** `admin`
 
-**Réponse (200):**
+**Response (200):**
 ```json
 {
   "users": [
@@ -369,11 +424,11 @@ Liste tous les utilisateurs (admin)
 
 ---
 
-## Authentification & Autorisation
+## Authentication & Authorization
 
-### Format du Token JWT
+### JWT Token Format
 
-Les tokens doivent contenir les claims suivants:
+Tokens must contain the following claims:
 
 ```json
 {
@@ -390,32 +445,32 @@ Les tokens doivent contenir les claims suivants:
 }
 ```
 
-### Validation du Token
+### Token Validation
 
-Le Resource Server vérifie automatiquement:
+The Resource Server automatically verifies:
 
-1. **Signature** - avec clé publique JWKS
-2. **Issuer (iss)** - doit matcher `OAUTH_ISSUER`
-3. **Audience (aud)** - doit contenir `OAUTH_AUDIENCE`
-4. **Expiration (exp)** - token non expiré
-5. **Not Before (nbf)** - token déjà valide
-6. **Algorithm** - seulement RS256 (pas "none")
+1. **Signature** - with public key from JWKS
+2. **Issuer (iss)** - must match `OAUTH_ISSUER`
+3. **Audience (aud)** - must contain `OAUTH_AUDIENCE`
+4. **Expiration (exp)** - token not expired
+5. **Not Before (nbf)** - token already valid
+6. **Algorithm** - only RS256 (not "none")
 
-### Scopes OAuth2
+### OAuth2 Scopes
 
 | Scope | Permission |
 |-------|-----------|
-| `profile` ou `openid` | Accès aux infos utilisateur (`/api/me`) |
-| `read:orders` | Lecture des commandes |
-| `write:orders` | Création/modification des commandes |
-| `admin:read` | Lecture des données admin |
+| `profile` or `openid` | Access to user info (`/api/me`) |
+| `read:orders` | Read orders |
+| `write:orders` | Create/modify orders |
+| `admin:read` | Read admin data |
 
-### Rôles
+### Roles
 
-| Rôle | Accès |
+| Role | Access |
 |------|-------|
-| `user` | Endpoints utilisateur standard |
-| `admin` | Endpoints admin (`/api/admin/*`) |
+| `user` | Standard user endpoints |
+| `admin` | Admin endpoints (`/api/admin/*`) |
 
 ---
 
@@ -463,116 +518,116 @@ def mock_jwks(mocker):
 
 ---
 
-## Sécurité
+## Security
 
-### Mesures implémentées
+### Implemented Security Measures
 
-1. **Validation stricte des JWT**
-   - Signature RSA (RS256)
-   - Vérification issuer, audience, expiration
-   - Rejet de l'algorithme "none"
+1. **Strict JWT Validation**
+   - RSA Signature (RS256)
+   - Issuer, audience, expiration verification
+   - Rejection of "none" algorithm
 
-2. **Gestion des erreurs OAuth2 standard (RFC 6750)**
-   - 401 avec `WWW-Authenticate` header
-   - 403 avec description du scope requis
-   - Messages d'erreur standardisés
+2. **Standard OAuth2 Error Handling (RFC 6750)**
+   - 401 with `WWW-Authenticate` header
+   - 403 with required scope description
+   - Standardized error messages
 
-3. **Pas de logging des tokens**
-   - Logs anonymisés (user ID seulement)
-   - Tokens jamais écrits en clair
+3. **No Token Logging**
+   - Anonymized logs (user ID only)
+   - Tokens never written in plain text
 
-4. **Cache JWKS intelligent**
-   - TTL de 1 heure
-   - Rafraîchissement automatique
+4. **Intelligent JWKS Cache**
+   - 1 hour TTL
+   - Automatic refresh
 
-5. **Tolérance de clock skew**
-   - ±60 secondes pour exp/nbf
+5. **Clock Skew Tolerance**
+   - ±60 seconds for exp/nbf
 
-6. **CORS configuré**
-   - Seulement pour origines autorisées (en prod)
+6. **Configured CORS**
+   - Only for authorized origins (in production)
 
-### Bonnes pratiques à implémenter (production)
+### Best Practices for Production
 
-- [ ] **HTTPS obligatoire** - Utiliser TLS/SSL
-- [ ] **Rate limiting** - Limiter les requêtes par IP/user
-- [ ] **Logging centralisé** - ELK stack, Datadog
-- [ ] **Monitoring** - Métriques sur auth success/fail
-- [ ] **Introspection** - Endpoint `/introspect` pour vérifier révocation
-- [ ] **Token binding** - Lier token au client (DPoP)
-- [ ] **Short-lived tokens** - Access tokens de 15-30 min
-- [ ] **Rotation de clés** - Processus pour rotation JWKS
+- [ ] **Mandatory HTTPS** - Use TLS/SSL
+- [ ] **Rate limiting** - Limit requests per IP/user
+- [ ] **Centralized logging** - ELK stack, Datadog
+- [ ] **Monitoring** - Metrics on auth success/fail
+- [ ] **Introspection** - `/introspect` endpoint to check revocation
+- [ ] **Token binding** - Bind token to client (DPoP)
+- [ ] **Short-lived tokens** - Access tokens 15-30 min
+- [ ] **Key rotation** - Process for JWKS rotation
 
 ---
 
-## Intégration avec les autres composants
+## Integration with Other Components
 
-### Avec Authorization Server (Omar)
+### With Authorization Server (Omar)
 
-**Tu as besoin de:**
-- L'URL du JWKS endpoint
-- L'issuer exact
-- La liste des scopes
-- La structure des claims
+**You need:**
+- The JWKS endpoint URL
+- The exact issuer
+- The list of scopes
+- The claims structure
 
-**Tu fournis:**
-- L'audience à mettre dans les tokens (`api://resource-server`)
-- Les scopes nécessaires pour chaque endpoint
-- Format des erreurs OAuth2
+**You provide:**
+- The audience to put in tokens (`api://resource-server`)
+- The scopes needed for each endpoint
+- OAuth2 error format
 
-### Avec Client App (Badr)
+### With Client App (Badr)
 
-**Tu fournis:**
-- Documentation des endpoints
-- Scopes requis par endpoint
-- Exemples de requêtes curl/Postman
-- Format des erreurs
+**You provide:**
+- Endpoint documentation
+- Required scopes per endpoint
+- curl/Postman request examples
+- Error format
 
-**Tu as besoin de:**
-- Confirmation que le client obtient les bons scopes
-- Tests d'intégration endpoint par endpoint
+**You need:**
+- Confirmation that the client gets the right scopes
+- Endpoint-by-endpoint integration tests
 
 ---
 
 ## Support & Debugging
 
-### Problèmes courants
+### Common Issues
 
-**Erreur: "Invalid issuer"**
+**Error: "Invalid issuer"**
 ```
-Solution: Vérifier que OAUTH_ISSUER match exactement le claim 'iss' du token
-```
-
-**Erreur: "Invalid audience"**
-```
-Solution: Vérifier que OAUTH_AUDIENCE est dans le claim 'aud' du token
+Solution: Verify that OAUTH_ISSUER exactly matches the 'iss' claim in the token
 ```
 
-**Erreur: "Unable to find a signing key"**
+**Error: "Invalid audience"**
 ```
-Solution: Vérifier que OAUTH_JWKS_URI est accessible et retourne les clés
+Solution: Verify that OAUTH_AUDIENCE is in the 'aud' claim of the token
+```
+
+**Error: "Unable to find a signing key"**
+```
+Solution: Verify that OAUTH_JWKS_URI is accessible and returns the keys
 Test: curl http://localhost:3000/.well-known/jwks.json
 ```
 
-**Erreur: "Token expired"**
+**Error: "Token expired"**
 ```
-Solution: Token trop vieux. Vérifier les horloges système (NTP)
+Solution: Token too old. Check system clocks (NTP)
 Clock skew tolerance: ±60s
 ```
 
-### Logs utiles
+### Useful Logs
 
 ```bash
-# Activer logs debug
+# Enable debug logs
 export LOG_LEVEL=DEBUG
 python app.py
 
-# Vérifier validation token
-# Logs montrent: user_id, scopes, mais JAMAIS le token complet
+# Check token validation
+# Logs show: user_id, scopes, but NEVER the complete token
 ```
 
 ---
 
-## Références
+## References
 
 - [RFC 6749 - OAuth 2.0](https://tools.ietf.org/html/rfc6749)
 - [RFC 6750 - Bearer Token Usage](https://tools.ietf.org/html/rfc6750)
@@ -584,16 +639,16 @@ python app.py
 
 ## TODO
 
-- [ ] Obtenir config OAuth2 d'Omar
-- [ ] Tests d'intégration avec l'IdP
-- [ ] Tests d'intégration avec le Client
-- [ ] Endpoint `/introspect` pour révocation
-- [ ] Métriques Prometheus
-- [ ] Documentation OpenAPI/Swagger
+- [ ] Get OAuth2 config from Omar
+- [ ] Integration tests with IdP
+- [ ] Integration tests with Client
+- [ ] `/introspect` endpoint for revocation
+- [ ] Prometheus metrics
+- [ ] OpenAPI/Swagger documentation
 - [ ] CI/CD pipeline
 
 ---
 
-**Auteur:** Youness  
-**Date:** Décembre 2024  
+**Author:** Youness  
+**Date:** December 2024  
 **Version:** 1.0
