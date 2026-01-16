@@ -1,12 +1,12 @@
 # Resource Server - Mesures de Sécurité
 
-## Vue d'ensemble
+## 🎯 Vue d'ensemble
 
 Ce document détaille toutes les mesures de sécurité implémentées dans le Resource Server, ainsi que les limites connues et les recommandations pour un déploiement en production.
 
 ---
 
-## Mesures de Sécurité Implémentées
+## ✅ Mesures de Sécurité Implémentées
 
 ### 1. Validation Stricte des JWT
 
@@ -29,9 +29,9 @@ payload = jwt.decode(
 ```
 
 **Protection contre:**
-- Tokens forgés
-- Algorithm confusion attack (alg: "none")
-- Tokens signés avec mauvaise clé
+- ❌ Tokens forgés
+- ❌ Algorithm confusion attack (alg: "none")
+- ❌ Tokens signés avec mauvaise clé
 
 #### 1.2 Vérification de l'Issuer (iss)
 
@@ -41,8 +41,8 @@ issuer=config.ISSUER  # http://localhost:3000
 ```
 
 **Protection contre:**
-- Tokens émis par un IdP malveillant
-- Token replay d'un autre système
+- ❌ Tokens émis par un IdP malveillant
+- ❌ Token replay d'un autre système
 
 **Erreur si invalide:**
 ```json
@@ -60,8 +60,8 @@ audience=config.AUDIENCE  # api://resource-server
 ```
 
 **Protection contre:**
-- Tokens destinés à d'autres APIs
-- Token reuse sur services différents
+- ❌ Tokens destinés à d'autres APIs
+- ❌ Token reuse sur services différents
 
 **Pourquoi c'est critique:**
 Un token destiné à l'API "payments" ne doit pas fonctionner sur l'API "orders".
@@ -75,8 +75,8 @@ leeway=60  # Tolérance de 60 secondes
 ```
 
 **Protection contre:**
-- Utilisation de tokens expirés
-- Token replay après invalidation
+- ❌ Utilisation de tokens expirés
+- ❌ Token replay après invalidation
 
 **Clock Skew Tolerance:**
 ±60 secondes pour gérer les différences d'horloge entre serveurs.
@@ -89,8 +89,8 @@ options={'verify_nbf': True}
 ```
 
 **Protection contre:**
-- Utilisation prématurée de tokens
-- Tokens schedulés pour plus tard utilisés maintenant
+- ❌ Utilisation prématurée de tokens
+- ❌ Tokens schedulés pour plus tard utilisés maintenant
 
 #### 1.6 Rejection de l'Algorithme "none"
 
@@ -100,8 +100,8 @@ algorithms=['RS256']  # Liste blanche explicite
 ```
 
 **Protection contre:**
-- CVE-2015-9235 (JWT alg:none vulnerability)
-- Bypass de signature
+- ❌ CVE-2015-9235 (JWT alg:none vulnerability)
+- ❌ Bypass de signature
 
 **Test:**
 ```python
@@ -129,13 +129,13 @@ jwks_client = PyJWKClient(
 ```
 
 **Avantages:**
-- Réduit latence (pas de fetch à chaque requête)
-- Réduit charge sur l'IdP
--  Refresh automatique après expiration
+- ✅ Réduit latence (pas de fetch à chaque requête)
+- ✅ Réduit charge sur l'IdP
+- ✅ Refresh automatique après expiration
 
 **Protection contre:**
--  DoS sur l'IdP
--  Latence excessive
+- ❌ DoS sur l'IdP
+- ❌ Latence excessive
 
 #### 2.2 Rotation de Clés
 
@@ -173,7 +173,7 @@ L'utilisateur doit avoir **AU MOINS UN** des scopes requis.
 **Exemple:**
 - Endpoint requiert: `read:orders` OU `admin:read`
 - User a: `read:orders`
--  Autorisé
+- ✅ Autorisé
 
 #### 3.2 Vérification des Rôles
 
@@ -240,10 +240,10 @@ Content-Type: application/json
 
 **Implémentation:**
 ```python
-#  BON
+# ✅ BON
 logger.info(f"Token validé pour user: {payload.get('sub')}, scopes: {payload.get('scope')}")
 
-#  MAUVAIS - JAMAIS FAIRE ÇA
+# ❌ MAUVAIS - JAMAIS FAIRE ÇA
 logger.info(f"Token reçu: {token}")  # INTERDIT
 ```
 
@@ -261,16 +261,16 @@ def test_token_not_logged(client, caplog):
 #### 5.2 Logs Anonymisés
 
 **Ce qui est loggé:**
--  `sub` (user ID)
--  `scopes` demandés
--  Endpoint appelé
--  Status code
--  Timestamp
+- ✅ `sub` (user ID)
+- ✅ `scopes` demandés
+- ✅ Endpoint appelé
+- ✅ Status code
+- ✅ Timestamp
 
 **Ce qui n'est JAMAIS loggé:**
--  Token complet
--  Token partiel
--  Payload JWT complet (contient possiblement des PII)
+- ❌ Token complet
+- ❌ Token partiel
+- ❌ Payload JWT complet (contient possiblement des PII)
 
 ---
 
@@ -336,7 +336,7 @@ if not data or 'product' not in data or 'amount' not in data:
 
 ---
 
-## Limites Connues & Risques
+## ⚠️ Limites Connues & Risques
 
 ### 1. Pas de Révocation de Tokens
 
@@ -349,9 +349,9 @@ if not data or 'product' not in data or 'amount' not in data:
 Si un token est volé, il reste valide jusqu'à expiration.
 
 **Mitigation:**
--  Tokens short-lived (15-30 min recommandé)
-- À implémenter: Endpoint d'introspection
-- À implémenter: Blacklist/revocation list
+- ✅ Tokens short-lived (15-30 min recommandé)
+- 🔄 À implémenter: Endpoint d'introspection
+- 🔄 À implémenter: Blacklist/revocation list
 
 **Implémentation future:**
 ```python
@@ -397,9 +397,9 @@ def get_orders():
 HTTP en développement.
 
 **Risque en production:**
--  Tokens transmis en clair
--  Man-in-the-middle attacks
--  Sniffing réseau
+- ❌ Tokens transmis en clair
+- ❌ Man-in-the-middle attacks
+- ❌ Sniffing réseau
 
 **Mitigation pour PROD:**
 ```python
@@ -522,7 +522,7 @@ Perte des données au redémarrage.
 
 ---
 
-## Recommandations pour Production
+## 🔒 Recommandations pour Production
 
 ### Checklist Sécurité Pré-Déploiement
 
@@ -588,7 +588,7 @@ Talisman(app,
 
 ---
 
-## Tests de Sécurité
+## 🧪 Tests de Sécurité
 
 ### Tests Automatisés à Implémenter
 
@@ -656,7 +656,7 @@ for i in {1..1000}; do curl http://localhost:5000/api/me; done
 
 ---
 
-## Métriques de Sécurité
+## 📊 Métriques de Sécurité
 
 ### KPIs à Suivre
 
@@ -670,7 +670,7 @@ for i in {1..1000}; do curl http://localhost:5000/api/me; done
 
 ---
 
-## Ressources
+## 📚 Ressources
 
 ### Standards OAuth2/OIDC
 

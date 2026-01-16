@@ -1,5 +1,5 @@
 // API Base URL
-const API_BASE_URL = window.location.protocol + '//' + window.location.hostname + ':5000';
+const API_BASE_URL = 'http://localhost:5000';
 
 // DOM Elements
 document.addEventListener('DOMContentLoaded', function() {
@@ -69,7 +69,7 @@ async function callApi(endpoint, method, authType, body = null) {
         headers['Authorization'] = 'Bearer invalid_token_here';
     } else if (authType === 'expired') {
         // Simulate expired token
-        headers['Authorization'] = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDIyMjEyMDB9.signature';
+        headers['Authorization'] = 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDIyMjEyMDB9.signature';
     }
     
     // Prepare request options

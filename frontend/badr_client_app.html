@@ -3,32 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Badr Client App</title>
+    <title>Client Application (Badr)</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="static/css/badr_client_app.css">
-    </style>
 </head>
 <body>
-
-    
     <div class="container">
         <header>
-            <h1>Welcome to Badr's App!</h1>
-            <p>The super duper awesome OAuth2 client application</p>
+            <h1>Client Application (Badr)</h1>
+            <p>OAuth2 Consumer Application</p>
         </header>
 
         <div class="token-section">
-            <h2>Your Session Status</h2>
+            <h2>Session Status</h2>
             <div class="token-inputs">
                 <div>
-                    <label for="sessionStatus">Current Status:</label>
+                    <label for="sessionStatus">Current Session:</label>
                     <input type="text" id="sessionStatus" value="Not logged in" readonly>
                 </div>
                 <div>
-                    <label for="userName">User Name:</label>
+                    <label for="userName">User:</label>
                     <input type="text" id="userName" value="None" readonly>
                 </div>
-                <button id="logoutBtn" class="api-btn" onclick="logout()">Logout</button>
+                <button id="logoutBtn" onclick="logout()">Logout</button>
             </div>
         </div>
 
@@ -41,107 +38,55 @@
         <div class="tab-content">
             <!-- Login Tab -->
             <div id="login" class="tab-pane active">
-                <h2>Welcome to Badr's Super Cool App!</h2>
+                <h2>Welcome to Badr's Application</h2>
                 
                 <div class="endpoint-card card">
                     <h3>Login with OAuth2</h3>
-                    <p>Experience the magic of seamless authentication!</p>
-                    
-                    <div id="provider-selection">
-                        <h4>Choose your identity provider:</h4>
-                        <div class="provider-options">
-                            <div class="provider-option card" onclick="selectProvider('omar', this)">
-                                <div class="provider-icon"></div>
-                                <h4>Omar Auth Server</h4>
-                                <p>Our own OAuth2 Identity Provider</p>
-                            </div>
-                            
-                            <div class="provider-option card disabled">
-                                <div class="provider-icon">G</div>
-                                <h4>Google</h4>
-                                <p>Coming soon!</p>
-                            </div>
-                            
-                            <div class="provider-option card disabled">
-                                <div class="provider-icon">GH</div>
-                                <h4>GitHub</h4>
-                                <p>Work in progress!</p>
-                            </div>
-                        </div>
-                        
-                        <div id="provider-result"></div>
-                    </div>
-                    
-                    <div id="oauth-login-container" class="oauth-login-container">
-                        <h4>Ready to log in with Omar Auth Server!</h4>
-                        <p id="selected-provider-name">Omar Auth Server</p>
-                        <button id="loginButton" class="api-btn" onclick="initiateOAuthFlow()">
-                            Let's Go!
-                        </button>
-                        <div id="login-result"></div>
-                        <button class="api-btn secondary" onclick="resetProviderSelection()">
-                            ← Change Provider
-                        </button>
-                    </div>
+                    <p>Secure third-party authentication</p>
+                    <button class="api-btn" onclick="loginWithOAuth2()" id="loginButton">Login via third party</button>
+                    <div class="result" id="login-result"></div>
                 </div>
             </div>
 
             <!-- Dashboard Tab -->
             <div id="dashboard" class="tab-pane">
-                <h2>Your Dashboard</h2>
+                <h2>User Dashboard</h2>
                 
                 <div class="endpoint-card card">
-                    <h3>Orders Management</h3>
-                    <p>View and manage your orders</p>
-                    
-                    <div class="button-group">
-                        <button class="api-btn" onclick="getOrders()">Get My Orders</button>
-                        <button class="api-btn" onclick="createOrder()">Create New Order</button>
-                    </div>
-                    
-                    <div id="orders-result" class="result-message"></div>
+                    <h3>Your Orders</h3>
+                    <p>View your recent orders</p>
+                    <button class="api-btn" onclick="loadOrders()">Load Orders</button>
+                    <div class="result" id="orders-result"></div>
                 </div>
-                
+
                 <div class="endpoint-card card">
-                    <h3>Admin Panel</h3>
-                    <p>Administrative functions (requires admin role)</p>
-                    
-                    <div class="button-group">
-                        <button class="api-btn" onclick="getAdminStats()">Get Stats</button>
-                        <button class="api-btn" onclick="getAdminUsers()">Get Users</button>
+                    <h3>Create New Order</h3>
+                    <p>Place a new order</p>
+                    <div class="form-group">
+                        <input type="text" id="productName" placeholder="Product Name">
+                        <input type="number" id="productAmount" placeholder="Amount" step="0.01">
+                        <button class="api-btn" onclick="createOrder()">Create Order</button>
                     </div>
-                    
-                    <div id="admin-result" class="result-message"></div>
+                    <div class="result" id="create-order-result"></div>
                 </div>
             </div>
 
             <!-- Profile Tab -->
             <div id="profile" class="tab-pane">
-                <h2>Your Profile</h2>
+                <h2>User Profile</h2>
                 
                 <div class="endpoint-card card">
-                    <h3>User Information</h3>
-                    <p>Your personal information from the token</p>
-                    
-                    <div class="button-group">
-                        <button class="api-btn" onclick="getUserInfo()">Get My Info</button>
-                    </div>
-                    
-                    <div id="profile-result" class="result-message"></div>
-                </div>
-                
-                <div class="endpoint-card card">
-                    <h3>Public Endpoint</h3>
-                    <p>Accessible without authentication</p>
-                    
-                    <div class="button-group">
-                        <button class="api-btn" onclick="getPublicInfo()">Get Public Info</button>
-                    </div>
-                    
-                    <div id="public-result" class="result-message"></div>
+                    <h3>Profile Information</h3>
+                    <p>Your account details</p>
+                    <button class="api-btn" onclick="loadProfile()">Load Profile</button>
+                    <div class="result" id="profile-result"></div>
                 </div>
             </div>
         </div>
+
+        <footer>
+            <p>Client Application (Badr) - OAuth2 Consumer</p>
+        </footer>
     </div>
 
     <script src="static/js/badr_client_app.js"></script>

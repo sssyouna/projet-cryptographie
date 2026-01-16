@@ -1,10 +1,10 @@
-# Quickstart - Resource Server
+# 🚀 Quickstart - Resource Server
 
 Guide de démarrage rapide pour lancer le Resource Server et tester l'authentification OAuth2.
 
 ---
 
-## Démarrage en 5 Minutes
+## ⚡ Démarrage en 5 Minutes
 
 ### 1. Installation
 
@@ -44,11 +44,11 @@ OAUTH_AUDIENCE=api://resource-server
 python app.py
 ```
 
-**API disponible sur:** `http://localhost:5000`
+✅ **API disponible sur:** `http://localhost:5000`
 
 ---
 
-## Tests Rapides
+## 🧪 Tests Rapides
 
 ### Test 1: Health Check (Public)
 
@@ -109,7 +109,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 ---
 
-## Checklist de Validation
+## 📋 Checklist de Validation
 
 Avant d'intégrer avec les autres composants:
 
@@ -133,7 +133,7 @@ Avant d'intégrer avec les autres composants:
 
 ---
 
-## Dépannage Rapide
+## 🐛 Dépannage Rapide
 
 ### Problème: "Unable to find a signing key"
 
@@ -193,9 +193,9 @@ date  # Doit être synchronisé
 
 ---
 
-## Workflow d'Intégration
+## 🔄 Workflow d'Intégration
 
-### Phase 1: Setup Solo (Fait)
+### Phase 1: Setup Solo (✅ Fait)
 - [x] Installation
 - [x] Configuration
 - [x] Tests endpoints publics

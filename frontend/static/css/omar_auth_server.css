@@ -1,70 +1,36 @@
-body { 
-    font-family: 'Comic Sans MS', cursive, sans-serif; 
-    max-width: 450px; 
-    margin: 30px auto; 
-    padding: 25px; 
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+body { background-color: #e8f4f8; }
+header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+.card { border-left: 5px solid #1e3c72; }
+.login-form { max-width: 400px; margin: 0 auto; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+.form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+.login-btn { width: 100%; padding: 12px; background: #1e3c72; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+.login-btn:hover { background: #2a5298; }
+
+/* Additional styles for Omar Auth Server */
+.text-center { text-align: center; }
+.text-gray { color: #666; }
+.hidden { display: none; }
+.consent-permission-box { 
+    background: #f0f8ff; 
+    padding: 15px; 
+    border-radius: 5px; 
+    margin: 15px 0; 
 }
-.login-form { 
-    border: 3px dashed #1e3c72; 
-    padding: 25px; 
-    border-radius: 15px; 
-    background: white;
-    text-align: center;
+.consent-buttons-container { 
+    display: flex; 
+    gap: 10px; 
+    margin-top: 20px; 
 }
-h2 { 
-    color: #1e3c72; 
-    margin-top: 0;
-    font-size: 28px;
+.consent-allow-btn { 
+    flex: 1; 
+    background: #28a745; 
 }
-.client-info {
-    background: #e8f4f8;
-    padding: 15px;
-    border-radius: 10px;
-    margin: 15px 0;
-    border-left: 4px solid #1e3c72;
+.consent-deny-btn { 
+    flex: 1; 
+    background: #dc3545; 
 }
-input { 
-    width: 100%; 
-    padding: 12px; 
-    margin: 12px 0; 
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    font-size: 16px;
-    box-sizing: border-box;
-}
-input:focus {
-    border-color: #1e3c72;
-    outline: none;
-    box-shadow: 0 0 5px rgba(30, 60, 114, 0.3);
-}
-button { 
-    background: #1e3c72; 
-    color: white; 
-    padding: 14px 25px; 
-    border: none; 
-    border-radius: 8px; 
-    cursor: pointer; 
-    font-size: 18px;
-    font-weight: bold;
-    margin-top: 10px;
-    transition: all 0.3s;
-}
-button:hover { 
-    background: #2a5298; 
-    transform: scale(1.05);
-}
-.demo-creds {
-    background: #fff3cd;
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 20px;
-    border: 1px dashed #ffc107;
-    font-size: 14px;
-}
-.fun-icon {
-    font-size: 40px;
-    margin: 10px 0;
+.margin-top-15 { 
+    margin-top: 15px; 
 }
