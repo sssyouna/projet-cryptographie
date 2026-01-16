@@ -23,6 +23,16 @@ def resource_server():
 def badr_client():
     return send_from_directory('.', 'badr_client_app.html')
 
+# Serve static CSS files
+@app.route('/static/css/<path:filename>')
+def serve_css(filename):
+    return send_from_directory('static/css', filename)
+
+# Serve static JS files
+@app.route('/static/js/<path:filename>')
+def serve_js(filename):
+    return send_from_directory('static/js', filename)
+
 @app.route('/<path:filename>')
 def serve_static(filename):
     return send_from_directory('.', filename)

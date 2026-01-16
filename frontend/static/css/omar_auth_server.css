@@ -1,0 +1,36 @@
+body { background-color: #e8f4f8; }
+header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+.card { border-left: 5px solid #1e3c72; }
+.login-form { max-width: 400px; margin: 0 auto; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+.form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+.login-btn { width: 100%; padding: 12px; background: #1e3c72; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+.login-btn:hover { background: #2a5298; }
+
+/* Additional styles for Omar Auth Server */
+.text-center { text-align: center; }
+.text-gray { color: #666; }
+.hidden { display: none; }
+.consent-permission-box { 
+    background: #f0f8ff; 
+    padding: 15px; 
+    border-radius: 5px; 
+    margin: 15px 0; 
+}
+.consent-buttons-container { 
+    display: flex; 
+    gap: 10px; 
+    margin-top: 20px; 
+}
+.consent-allow-btn { 
+    flex: 1; 
+    background: #28a745; 
+}
+.consent-deny-btn { 
+    flex: 1; 
+    background: #dc3545; 
+}
+.margin-top-15 { 
+    margin-top: 15px; 
+}

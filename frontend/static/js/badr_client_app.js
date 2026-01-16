@@ -1,0 +1,268 @@
+// Check for OAuth2 callback on page load
+window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const state = urlParams.get('state');
+    
+    if (code) {
+        // We've been redirected back from the authorization server
+        handleOAuth2Callback(code, state);
+    } else {
+        // Check if we have a stored session
+        checkStoredSession();
+    }
+};
+
+// DOM Elements
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab functionality
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabId = button.getAttribute('data-tab');
+            
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabPanes.forEach(pane => pane.classList.remove('active'));
+            
+            button.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+});
+
+// Login with OAuth2
+function loginWithOAuth2() {
+    const loginButton = document.getElementById('loginButton');
+    loginButton.disabled = true;
+    loginButton.textContent = 'Redirecting...';
+    
+    // Generate state parameter for security
+    const state = Math.random().toString(36).substring(2, 15);
+    sessionStorage.setItem('oauth2_state', state);
+    
+    // Redirect to authorization server
+    const redirectUri = encodeURIComponent('http://localhost:8080/badr_client_app.html');
+    const authUrl = `http://localhost:8080/omar_auth_server.html?response_type=code&client_id=badr_app&redirect_uri=${redirectUri}&scope=profile read:orders write:orders&state=${state}`;
+    
+    setTimeout(() => {
+        window.location.href = authUrl;
+    }, 1000);
+}
+
+// Handle OAuth2 callback
+function handleOAuth2Callback(code, state) {
+    // Verify state parameter
+    const storedState = sessionStorage.getItem('oauth2_state');
+    if (state !== storedState) {
+        displayError({message: "Invalid state parameter. Possible CSRF attack."}, 'login-result');
+        return;
+    }
+    
+    // Exchange authorization code for tokens
+    exchangeCodeForTokens(code);
+}
+
+// Exchange code for tokens
+function exchangeCodeForTokens(code) {
+    displayResult({message: "Exchanging authorization code for tokens..."}, 'login-result');
+    
+    // Simulate API call to token endpoint
+    setTimeout(() => {
+        // Generate tokens
+        const accessToken = generateAccessToken();
+        const refreshToken = 'refresh_' + Math.random().toString(36).substr(2, 15);
+        
+        // Store tokens
+        localStorage.setItem('access_token', accessToken);
+        localStorage.setItem('refresh_token', refreshToken);
+        
+        // Update session status
+        document.getElementById('sessionStatus').value = 'Logged in';
+        document.getElementById('userName').value = 'Alice';
+        
+        // Show success message
+        displayResult({
+            message: "Authentication successful!",
+            access_token: accessToken.substring(0, 20) + "...",
+            refresh_token: refreshToken.substring(0, 20) + "..."
+        }, 'login-result');
+        
+        // Switch to dashboard tab
+        switchTab('dashboard');
+    }, 1500);
+}
+
+// Check for stored session
+function checkStoredSession() {
+    const accessToken = localStorage.getItem('access_token');
+    if (accessToken) {
+        document.getElementById('sessionStatus').value = 'Logged in';
+        document.getElementById('userName').value = 'Alice';
+        switchTab('dashboard');
+    }
+}
+
+// Logout
+function logout() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    sessionStorage.removeItem('oauth2_state');
+    
+    document.getElementById('sessionStatus').value = 'Not logged in';
+    document.getElementById('userName').value = 'None';
+    
+    // Clear results
+    document.getElementById('login-result').innerHTML = '';
+    document.getElementById('orders-result').innerHTML = '';
+    document.getElementById('profile-result').innerHTML = '';
+    document.getElementById('create-order-result').innerHTML = '';
+    
+    switchTab('login');
+}
+
+// Load orders
+function loadOrders() {
+    const accessToken = localStorage.getItem('access_token');
+    
+    if (!accessToken) {
+        displayError({message: "Please log in first"}, 'orders-result');
+        return;
+    }
+    
+    displayResult({message: "Loading orders..."}, 'orders-result');
+    
+    // Simulate API call
+    setTimeout(() => {
+        const result = {
+            orders: [
+                {id: "order-001", product: "Laptop", amount: 1200.00, status: "delivered"},
+                {id: "order-002", product: "Mouse", amount: 25.99, status: "pending"}
+            ],
+            total: 2
+        };
+        
+        displayResult({
+            status: 200,
+            statusText: "OK",
+            data: result
+        }, 'orders-result');
+    }, 1000);
+}
+
+// Create order
+function createOrder() {
+    const accessToken = localStorage.getItem('access_token');
+    
+    if (!accessToken) {
+        displayError({message: "Please log in first"}, 'create-order-result');
+        return;
+    }
+    
+    const product = document.getElementById('productName').value;
+    const amount = document.getElementById('productAmount').value;
+    
+    if (!product || !amount) {
+        displayError({message: "Product name and amount are required"}, 'create-order-result');
+        return;
+    }
+    
+    displayResult({message: "Creating order..."}, 'create-order-result');
+    
+    // Simulate API call
+    setTimeout(() => {
+        const result = {
+            id: "order-" + Math.floor(Math.random() * 1000),
+            user_id: "user-123",
+            product: product,
+            amount: parseFloat(amount),
+            status: "pending",
+            date: new Date().toISOString()
+        };
+        
+        displayResult({
+            status: 201,
+            statusText: "Created",
+            data: result
+        }, 'create-order-result');
+        
+        // Clear form
+        document.getElementById('productName').value = '';
+        document.getElementById('productAmount').value = '';
+    }, 1000);
+}
+
+// Load profile
+function loadProfile() {
+    const accessToken = localStorage.getItem('access_token');
+    
+    if (!accessToken) {
+        displayError({message: "Please log in first"}, 'profile-result');
+        return;
+    }
+    
+    displayResult({message: "Loading profile..."}, 'profile-result');
+    
+    // Simulate API call
+    setTimeout(() => {
+        const result = {
+            user_id: "user-123",
+            email: "alice@example.com",
+            name: "Alice",
+            scopes: ["profile", "read:orders", "write:orders"]
+        };
+        
+        displayResult({
+            status: 200,
+            statusText: "OK",
+            data: result
+        }, 'profile-result');
+    }, 1000);
+}
+
+// Switch tab
+function switchTab(tabId) {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+    tabPanes.forEach(pane => pane.classList.remove('active'));
+    
+    document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+}
+
+// Generate sample access token
+function generateAccessToken() {
+    const header = btoa(JSON.stringify({
+        alg: "RS256",
+        typ: "JWT",
+        kid: "key-2024-01"
+    }));
+    
+    const payload = btoa(JSON.stringify({
+        iss: "http://localhost:3000",
+        aud: "api://resource-server",
+        sub: "user-123",
+        exp: Math.floor(Date.now() / 1000) + 3600,
+        iat: Math.floor(Date.now() / 1000),
+        scope: "profile read:orders write:orders"
+    }));
+    
+    return `${header}.${payload}.signature`;
+}
+
+// Display results
+function displayResult(data, elementId) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+    element.className = 'result success';
+}
+
+// Display errors
+function displayError(error, elementId) {
+    const element = document.getElementById(elementId);
+    element.innerHTML = '<pre>' + JSON.stringify(error, null, 2) + '</pre>';
+    element.className = 'result error';
+}
